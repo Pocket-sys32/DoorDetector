@@ -1,6 +1,5 @@
-
-const int trigPin = 9;  
-const int echoPin = 10; 
+const int trigPin = 9;
+const int echoPin = 10;
 
 float duration, distance;
 
@@ -18,8 +17,8 @@ void loop() {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
-  distance = (duration*.0343)/2;
-  Serial.print("Distance: ");
+  distance = (duration * .0343) / 2;
+  Serial.print("");
   Serial.println(distance);
   if (distance > 15.24) {
     digitalWrite(4, HIGH);
@@ -33,9 +32,4 @@ void loop() {
     digitalWrite(3, LOW);
   }
   delay(100);
- }
-
-
-
-
-
+}

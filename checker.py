@@ -2,6 +2,7 @@ import serial
 import tweepy
 import time
 import os
+import oauthlib
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -28,14 +29,15 @@ def readserial(comport, baudrate):
         data = ser.readline().decode().strip()
         if data:
             print(data)
+            return data
 
 while True:
     readserial('COM3', 9600)
     distance = readserial('COM3', 9600)
-    if distance > 15.24:
+    if float(distance) > 15.24:
         api.create_tweet(text='Pockets mouse has moved!')
+        print("tweet has been sent.")
     time.sleep(300)
-
 
 
 
