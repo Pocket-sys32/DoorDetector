@@ -4,6 +4,7 @@ you essentially have an UNO3 hooked up to a HC-SR04 Ultrasonic Sensor and when t
 it would post a tweet! 
 
 - Created using Arduino IDE + PyCharm (C++ & Python)
+- Uses Flask + Tweepy
 
 To use: download the requirements.txt and run it:
 py install -r requirements.txt
