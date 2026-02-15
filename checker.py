@@ -1,32 +1,27 @@
 import serial
 import tweepy
-import time
+import datetime
 import os
+from flask import Flask
 from dotenv import load_dotenv
 load_dotenv()
 
-CLIENTID_SECRET = os.environ.get("CLIENTID_SECRET")
-CLIENTID = os.environ.get("CLIENTID")
+CONSUMER = os.environ.get("CONSUMER")
+CONSUMER_SECRET = os.environ.get("CONSUMER_SECRET")
+ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
+ACCESS_SECRET = os.environ.get("ACCESS_SECRET")
 
-oauth2_user_handler = tweepy.OAuth2UserHandler(
-    client_id=CLIENTID,
-    redirect_uri="http://127.0.0.1",
-    scope=["tweet.read", "tweet.write", "users.read"],
-    # Client Secret is only necessary if using a confidential client
-    client_secret=CLIENTID_SECRET
-)
-
-print(oauth2_user_handler.get_authorization_url())
+client = tweepy.Client(consumer_key = CONSUMER,
+                       consumer_secret = CONSUMER_SECRET,
+                       access_token = ACCESS_TOKEN,
+                       access_token_secret = ACCESS_SECRET)
 
 
-auth = input("Give me the link!")
-access_token = oauth2_user_handler.fetch_token(
-    auth
-)
-client = tweepy.Client(access_token["access_token"])
+#starting code
+last_state = False
 
 
-
+app = Flask(__name__)
 
 def readserial(comport, baudrate):
     ser = serial.Serial(comport, baudrate, timeout=0.1)
@@ -36,16 +31,23 @@ def readserial(comport, baudrate):
             print(data)
             return data
 
-while True:
+
+@app.route("/")
+def tweet():
+    global last_state
     readserial('COM3', 9600)
-    distance = readserial('COM3', 9600)
-    if float(distance) > 15.24:
+    now = str(datetime.datetime.now())
+    dist = float(readserial('COM3', 9600))
+    if dist > 15.24:
+        door_open = True
+    else:
+        door_open = False
+    if door_open and not last_state:
+        last_state = True
         response = client.create_tweet(
-        text="The door has opened!",
-        user_auth=False)
+        text=f"The wall has been detected. {now}")
         print(f"https://twitter.com/user/status/{response.data['id']}")
-
-    time.sleep(300)
-
-
+        return f"<p>https://twitter.com/user/status/{response.data['id']}</p>"
+    last_state = door_open
+    return "No data"
 
