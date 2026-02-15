@@ -1,0 +1,4 @@
+pyserial~=3.5
+tweepy~=4.16.0
+python-dotenv~=1.2.1
+flask
